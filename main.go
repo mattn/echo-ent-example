@@ -13,8 +13,6 @@ import (
 	"github.com/mattn/echo-ent-example/ent/comment"
 )
 
-var dbDriver = "postgres"
-
 func setupEcho() *echo.Echo {
 	e := echo.New()
 	e.Debug = true
@@ -86,7 +84,7 @@ func (controller *Controller) InsertComment(c echo.Context) error {
 }
 
 func main() {
-	client, err := ent.Open(dbDriver, os.Getenv("DSN"))
+	client, err := ent.Open("postgres", os.Getenv("DSN"))
 	if err != nil {
 		log.Fatalf("failed opening connection to sqlite: %v", err)
 	}

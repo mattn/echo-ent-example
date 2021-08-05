@@ -24,10 +24,10 @@ func TestInsertCommentWithoutComment(t *testing.T) {
 	defer client.Close()
 
 	// Run the auto migration tool.
-	if err := client.Schema.Create(context.Background()); err != nil {
+	if err := client.Debug().Schema.Create(context.Background()); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
-	controller := &Controller{client: client}
+	controller := &Controller{client: client.Debug()}
 
 	req := httptest.NewRequest(http.MethodPost, "/api/comments", strings.NewReader(`
 	{
@@ -65,7 +65,7 @@ func TestInsertCommentWithComment(t *testing.T) {
 	if err := client.Schema.Create(context.Background()); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
-	controller := &Controller{client: client}
+	controller := &Controller{client: client.Debug()}
 
 	req := httptest.NewRequest(http.MethodPost, "/api/comments", strings.NewReader(`
 	{
@@ -101,7 +101,7 @@ func TestGetComment(t *testing.T) {
 	if err := client.Schema.Create(context.Background()); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
-	controller := &Controller{client: client}
+	controller := &Controller{client: client.Debug()}
 
 	req := httptest.NewRequest(http.MethodGet, "/api/comments/1", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -165,7 +165,7 @@ func TestListComment(t *testing.T) {
 	if err := client.Schema.Create(context.Background()); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
-	controller := &Controller{client: client}
+	controller := &Controller{client: client.Debug()}
 
 	req := httptest.NewRequest(http.MethodGet, "/api/comments", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
