@@ -1,6 +1,6 @@
 # echo-ent-example
 
-Example application of Echo (Go web framework) and Entgo (ORM). This use validator and translator.
+Example application of Echo (Go web framework) and Entgo (ORM).
 
 ## Usage
 
