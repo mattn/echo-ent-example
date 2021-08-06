@@ -23,20 +23,10 @@ func (Comment) Fields() []ent.Field {
 			MaxLen(200).
 			Default(""),
 		field.Time("created").
-			Default(func() time.Time {
-				return time.Now()
-			}),
+			Default(time.Now).
+			Immutable(),
 		field.Time("updated").
-			Default(func() time.Time {
-				return time.Now()
-			}).
-			UpdateDefault(func() time.Time {
-				return time.Now()
-			}),
+			Default(time.Now).
+			UpdateDefault(time.Now),
 	}
-}
-
-// Edges of the Comment.
-func (Comment) Edges() []ent.Edge {
-	return nil
 }

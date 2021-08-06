@@ -21,9 +21,9 @@ type CommentUpdate struct {
 	mutation *CommentMutation
 }
 
-// Where adds a new predicate for the CommentUpdate builder.
+// Where appends a list predicates to the CommentUpdate builder.
 func (cu *CommentUpdate) Where(ps ...predicate.Comment) *CommentUpdate {
-	cu.mutation.predicates = append(cu.mutation.predicates, ps...)
+	cu.mutation.Where(ps...)
 	return cu
 }
 
@@ -51,20 +51,6 @@ func (cu *CommentUpdate) SetText(s string) *CommentUpdate {
 func (cu *CommentUpdate) SetNillableText(s *string) *CommentUpdate {
 	if s != nil {
 		cu.SetText(*s)
-	}
-	return cu
-}
-
-// SetCreated sets the "created" field.
-func (cu *CommentUpdate) SetCreated(t time.Time) *CommentUpdate {
-	cu.mutation.SetCreated(t)
-	return cu
-}
-
-// SetNillableCreated sets the "created" field if the given value is not nil.
-func (cu *CommentUpdate) SetNillableCreated(t *time.Time) *CommentUpdate {
-	if t != nil {
-		cu.SetCreated(*t)
 	}
 	return cu
 }
@@ -107,6 +93,9 @@ func (cu *CommentUpdate) Save(ctx context.Context) (int, error) {
 			return affected, err
 		})
 		for i := len(cu.hooks) - 1; i >= 0; i-- {
+			if cu.hooks[i] == nil {
+				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
+			}
 			mut = cu.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, cu.mutation); err != nil {
@@ -193,13 +182,6 @@ func (cu *CommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: comment.FieldText,
 		})
 	}
-	if value, ok := cu.mutation.Created(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: comment.FieldCreated,
-		})
-	}
 	if value, ok := cu.mutation.Updated(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -210,8 +192,8 @@ func (cu *CommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{comment.Label}
-		} else if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		} else if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return 0, err
 	}
@@ -250,20 +232,6 @@ func (cuo *CommentUpdateOne) SetText(s string) *CommentUpdateOne {
 func (cuo *CommentUpdateOne) SetNillableText(s *string) *CommentUpdateOne {
 	if s != nil {
 		cuo.SetText(*s)
-	}
-	return cuo
-}
-
-// SetCreated sets the "created" field.
-func (cuo *CommentUpdateOne) SetCreated(t time.Time) *CommentUpdateOne {
-	cuo.mutation.SetCreated(t)
-	return cuo
-}
-
-// SetNillableCreated sets the "created" field if the given value is not nil.
-func (cuo *CommentUpdateOne) SetNillableCreated(t *time.Time) *CommentUpdateOne {
-	if t != nil {
-		cuo.SetCreated(*t)
 	}
 	return cuo
 }
@@ -313,6 +281,9 @@ func (cuo *CommentUpdateOne) Save(ctx context.Context) (*Comment, error) {
 			return node, err
 		})
 		for i := len(cuo.hooks) - 1; i >= 0; i-- {
+			if cuo.hooks[i] == nil {
+				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
+			}
 			mut = cuo.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, cuo.mutation); err != nil {
@@ -416,13 +387,6 @@ func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err e
 			Column: comment.FieldText,
 		})
 	}
-	if value, ok := cuo.mutation.Created(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: comment.FieldCreated,
-		})
-	}
 	if value, ok := cuo.mutation.Updated(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -436,8 +400,8 @@ func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err e
 	if err = sqlgraph.UpdateNode(ctx, cuo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{comment.Label}
-		} else if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		} else if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return nil, err
 	}

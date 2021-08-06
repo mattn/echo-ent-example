@@ -18,10 +18,9 @@ var (
 	}
 	// CommentsTable holds the schema information for the "comments" table.
 	CommentsTable = &schema.Table{
-		Name:        "comments",
-		Columns:     CommentsColumns,
-		PrimaryKey:  []*schema.Column{CommentsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{},
+		Name:       "comments",
+		Columns:    CommentsColumns,
+		PrimaryKey: []*schema.Column{CommentsColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
