@@ -86,7 +86,7 @@ func (controller *Controller) InsertComment(c echo.Context) error {
 func main() {
 	client, err := ent.Open("postgres", os.Getenv("DSN"))
 	if err != nil {
-		log.Fatalf("failed opening connection to sqlite: %v", err)
+		log.Fatalf("failed opening connection to postgres: %v", err)
 	}
 	defer client.Close()
 
