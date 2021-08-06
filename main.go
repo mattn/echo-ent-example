@@ -70,16 +70,16 @@ func (controller *Controller) InsertComment(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Bind: "+err.Error())
 	}
 	// insert record
-	newComment := controller.client.Comment.Create()
+	cc := controller.client.Comment.Create().SetText(comment.Text)
 	if comment.Name != "" {
-		newComment.SetName(comment.Name)
+		cc.SetName(comment.Name)
 	}
-	newComment.SetText(comment.Text)
-	if _, err := newComment.Save(context.Background()); err != nil {
+	newComment, err := cc.Save(context.Background())
+	if err != nil {
 		c.Logger().Error("Insert: ", err)
 		return c.String(http.StatusBadRequest, "Save: "+err.Error())
 	}
-	c.Logger().Infof("inserted comment: %v", comment.ID)
+	c.Logger().Infof("inserted comment: %v", newComment.ID)
 	return c.NoContent(http.StatusCreated)
 }
 

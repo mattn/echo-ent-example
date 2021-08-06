@@ -112,8 +112,8 @@ func (m CommentMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// ID returns the ID value in the mutation. Note that the ID
-// is only available if it was provided to the builder.
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
 func (m *CommentMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
@@ -263,6 +263,11 @@ func (m *CommentMutation) OldUpdated(ctx context.Context) (v time.Time, err erro
 // ResetUpdated resets all changes to the "updated" field.
 func (m *CommentMutation) ResetUpdated() {
 	m.updated = nil
+}
+
+// Where appends a list predicates to the CommentMutation builder.
+func (m *CommentMutation) Where(ps ...predicate.Comment) {
+	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
